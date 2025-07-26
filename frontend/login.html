@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DB-Ease | Login</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="antialiased flex items-center justify-center h-screen">
+
+    <div class="w-full max-w-md p-8 space-y-8 bg-gray-800/80 backdrop-blur-sm border border-gray-700/50 rounded-lg shadow-2xl">
+        <div class="text-center">
+            <div class="flex items-center justify-center gap-2 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-400"><path d="M4 7V4a2 2 0 0 1 2-2h8.5L20 7.5V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-3"/><path d="M9 15h6"/><path d="M9 12h6"/><path d="M9 9h3"/></svg>
+                <h1 class="text-3xl font-bold text-white">DB-Ease</h1>
+            </div>
+            <p class="text-gray-400">Connect to your database</p>
+        </div>
+        
+        <form id="login-form" class="space-y-6">
+            <div>
+                <label for="username" class="text-sm font-medium text-gray-300">Username</label>
+                <input id="username" name="username" type="text" required class="mt-1 block w-full px-3 py-2 bg-gray-900/50 border border-gray-600 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="db_user">
+            </div>
+            
+            <div>
+                <label for="password" class="text-sm font-medium text-gray-300">Password</label>
+                <input id="password" name="password" type="password" required class="mt-1 block w-full px-3 py-2 bg-gray-900/50 border border-gray-600 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="••••••••">
+            </div>
+
+            <div id="error-message" class="text-red-400 text-sm hidden"></div>
+            
+            <div>
+                <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-900">
+                    Connect
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Custom Script for Login Logic -->
+    <script src="login.js"></script>
+</body>
+</html>

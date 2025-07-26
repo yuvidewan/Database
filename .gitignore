@@ -1,0 +1,66 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+/env1/
+/env/
+/venv/
+
+# Alembic Migrations
+alembic_admin/versions/
+alembic_state/versions/
+
+
+# Environment variables
+.env
+.env.production
+.env.uat
+.env.development
+.flaskenv
+
+# Alembic
+# Only ignore the alembic_version table if you are running it offline,
+# otherwise, keep the versions folder tracked.
+# If you run `alembic revision --autogenerate`, the new files go in here.
+
+
+# Database files (if you happen to have any local sqlite or other database files)
+*.sqlite
+*.db
+*.sqlite3
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# Editor/IDE specific files
+.idea/             # PyCharm / IntelliJ IDEA
+.vscode/           # VS Code
+*.sublime-project
+*.sublime-workspace
+.project           # Eclipse
+.pydevproject      # Eclipse PyDev
+
+# Logs
+#*.log
+#log/
+#logs/
+
+# Test/Coverage reports
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# hpc_pdf_directory
+hpc_files/*
+
+# error log directory
+logs/*
