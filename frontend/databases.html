@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DB-Ease | Select Database</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="antialiased flex items-center justify-center h-screen">
+
+    <div class="w-full max-w-lg p-8 space-y-6 bg-gray-800/80 backdrop-blur-sm border border-gray-700/50 rounded-lg shadow-2xl flex flex-col" style="max-height: 80vh;">
+        <div class="text-center flex-shrink-0">
+            <h1 class="text-3xl font-bold text-white">Select a Database</h1>
+            <p class="text-gray-400 mt-2">Choose a database to view its tables.</p>
+        </div>
+        
+        <!-- NEW: Wrapper for scrollable content -->
+        <div class="flex-grow overflow-y-auto no-scrollbar">
+            <!-- Database list will be populated here by JavaScript -->
+            <div id="database-list" class="space-y-2">
+                <!-- Loading state -->
+                <p id="loading-message" class="text-center text-gray-400">Loading databases...</p>
+            </div>
+        </div>
+
+        <div id="error-message" class="text-red-400 text-sm hidden text-center flex-shrink-0"></div>
+    </div>
+
+    <!-- New script for this page -->
+    <script src="databases.js"></script>
+</body>
+</html>

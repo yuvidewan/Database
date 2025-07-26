@@ -6,22 +6,22 @@ body {
 }
 
 /* Styles for the main draggable and resizable window */
-#draggable-container {
-    position: absolute;
+.draggable-container {
+    position: absolute; /* Changed from #draggable-container */
     top: 50px;
     left: 50px;
-    min-width: 400px;
-    min-height: 200px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    min-width: 350px;
+    min-height: 250px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
 }
 
 /* Style for the drag handle (the header) */
-#drag-handle {
+.drag-handle {
     cursor: move;
 }
 
 /* Style for the resize handle in the bottom-right corner */
-#resize-handle {
+.resize-handle {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -36,6 +36,22 @@ body {
 /* Container for the scrollable table area */
 .table-container {
     height: calc(100% - 48px); /* Full height minus header */
+}
+
+/* --- NEW STYLES --- */
+/* Bottom bar styles */
+#bottom-bar {
+    white-space: nowrap;
+}
+
+/* Close button on table windows */
+.close-btn {
+    font-size: 1.5rem;
+    line-height: 1;
+    font-weight: bold;
+    background: none;
+    border: none;
+    cursor: pointer;
 }
 
 /* Utility class to hide scrollbars on elements */
