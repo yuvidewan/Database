@@ -71,83 +71,60 @@ def format_data(data_list,column_names):
     return l
 
 @router.get("/showtb")
-def show_tables(username,password,db_name):
-    # {
-    # "products": {
-    #     "columns": ["id", "name", "price"],
-    #     "rows": [
-    #     { "id": 1, "name": "Quantum Laptop", "price": 1499.99 },
-    #     { "id": 2, "name": "Ergo-Flow Keyboard", "price": 89.50 }
-    #     ]
-    # },
-    # "customers": {
-    #     "columns": ["customer_id", "first_name", "email"],
-    #     "rows": [
-    #     { "customer_id": 101, "first_name": "Alice", "email": "alice@example.com" },
-    #     { "customer_id": 102, "first_name": "Bob", "email": "bob@example.com" }
-    #     ]
-    # },
-    # "orders": {
-    #     "columns": ["order_id", "customer_id", "order_date", "total"],
-    #     "rows": [
-    #     { "order_id": 5001, "customer_id": 101, "order_date": "2025-07-26", "total": 1499.99 },
-    #     { "order_id": 5002, "customer_id": 101, "order_date": "2025-07-26", "total": 89.50 }
-    #     ]
-    # }
-    # }
+def show_tables_structure(username,password,db_name):
+    # This endpoint now only gets the table structure (columns and total rows)
+    # The initial row data will be fetched by a separate call from the frontend.
     try:
-        obj = pymysql.connect(
-            host = "localhost",
-            user = username,
-            password = password,
-            database = db_name
-        )
+        obj = pymysql.connect(host="localhost", user=username, password=password, database=db_name)
         cur = obj.cursor()
     except Exception as e:
-        raise HTTPException(
-            status_code=401
-        )
-    cur.execute("show tables")
-    tb_list = cur.fetchall()
+        raise HTTPException(status_code=401, detail="Database connection failed.")
     
-    for i in range(len(tb_list)):
-        tb_list[i] = tb_list[i][0]
-
+    cur.execute("SHOW TABLES")
+    tb_list_tuples = cur.fetchall()
+    tb_list = [item[0] for item in tb_list_tuples]
 
     table_block = {}
-    for i in tb_list: 
-        cur.execute(f"describe {i}")
+    for table_name in tb_list: 
+        # Get column names
+        cur.execute(f"DESCRIBE {table_name}")
         desc = cur.fetchall()
-        column_names = []
-        for j in desc:
-            column_names.append(j[0])
-        # print(i,column_names)
-        # print("----------------")
-
-
-        local_dict = {}
-        local_dict["columns"] = column_names
-
-
-        cur.execute(f"select * from {i}")
-        data_list = cur.fetchall()
-        # This now calls the corrected format_data function
-        formatted_data = format_data(data_list = data_list, column_names = column_names)
-        # for i in formatted_data:
-        #     print(i)
-        #     print("-------------")
-        local_dict["rows"] = formatted_data
-
-        table_block[i] = local_dict
-
-    # IMPORTANT: The return statement should be outside the loop
-    return JSONResponse(
-        status_code=200,
-        content=table_block
-    )
+        column_names = [j[0] for j in desc]
         
+        # Get total row count for pagination
+        cur.execute(f"SELECT COUNT(*) FROM {table_name}")
+        total_rows = cur.fetchone()[0]
+
+        table_block[table_name] = {
+            "columns": column_names,
+            "total_rows": total_rows,
+            "rows": [] # Rows will be fetched on demand by the frontend
+        }
     
-    # for i in table_block:
-    #     print(i," - ",table_block[i])
-    #     print("------------------")
+    obj.close()
+    return JSONResponse(status_code=200, content=table_block)
+
+@router.get("/get-page")
+def get_page_data(username: str, password: str, db_name: str, table_name: str, page: int = 1, limit: int = 50):
+    try:
+        obj = pymysql.connect(host="localhost", user=username, password=password, database=db_name)
+        cur = obj.cursor()
+        
+        offset = (page - 1) * limit
+        
+        # Get column names first to use in format_data
+        cur.execute(f"DESCRIBE `{table_name}`")
+        desc = cur.fetchall()
+        column_names = [j[0] for j in desc]
+
+        query = f"SELECT * FROM `{table_name}` LIMIT %s OFFSET %s"
+        cur.execute(query, (limit, offset))
+        data_list = cur.fetchall()
+        
+        obj.close()
+        
+        formatted_data = format_data(data_list=data_list, column_names=column_names)
+        return JSONResponse(status_code=200, content={"rows": formatted_data})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred while fetching page data: {e}")
 

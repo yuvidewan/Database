@@ -7,7 +7,7 @@ body {
 
 /* Styles for the main draggable and resizable window */
 .draggable-container {
-    position: absolute; /* Changed from #draggable-container */
+    position: absolute;
     top: 50px;
     left: 50px;
     min-width: 350px;
@@ -38,27 +38,60 @@ body {
     height: calc(100% - 48px); /* Full height minus header */
 }
 
-/* --- NEW STYLES --- */
 /* Bottom bar styles */
 #bottom-bar {
     white-space: nowrap;
 }
 
+/* FIX: New style to allow the table list to shrink and scroll */
+#table-list-wrapper {
+    min-width: 0;
+}
+
 /* Close button on table windows */
-.close-btn {
+.close-btn, .add-row-btn {
     font-size: 1.5rem;
     line-height: 1;
     font-weight: bold;
     background: none;
     border: none;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* SELECTION STYLES */
+.table-body td {
+    user-select: none;
+    border: 1px solid transparent;
+}
+
+.table-body td.selected {
+    background-color: rgba(59, 130, 246, 0.3);
+    border: 1px solid #3B82F6;
+}
+
+/* INSERT STYLES */
+.insert-row input {
+    width: 100%;
+    background-color: rgba(17, 24, 39, 0.8);
+    border: 1px solid #4B5563;
+    color: #D1D5DB;
+    padding: 0.5rem;
+    border-radius: 4px;
+    outline: none;
+}
+
+.insert-row input:focus {
+    border-color: #4F46E5;
 }
 
 /* Utility class to hide scrollbars on elements */
 .no-scrollbar::-webkit-scrollbar {
-    display: none; /* For Chrome, Safari, and Opera */
+    display: none;
 }
 .no-scrollbar {
-    -ms-overflow-style: none;  /* For Internet Explorer and Edge */
-    scrollbar-width: none;  /* For Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
