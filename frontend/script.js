@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isDraggingWindow: false,
         isResizingWindow: false,
         isSelectingCells: false,
+        isEditingCell: false,
         selectionStartCell: null,
         currentSelection: [],
         selectedTableName: null,
@@ -42,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
             tableSchemas = await response.json();
             populateBottomBar(Object.keys(tableSchemas));
             
-            // FIX: Restore window states on refresh
             loadWindowsState();
 
         } catch (error) {
@@ -61,11 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
             button.className = 'px-4 py-2 rounded-md bg-gray-700/60 text-white font-medium hover:bg-indigo-600 transition-colors';
             button.textContent = tableName;
             button.addEventListener('click', () => {
-                // FIX: Bring to front/center if already open, else create new
                 if (openWindows[tableName]) {
                     const win = openWindows[tableName].element;
                     win.style.zIndex = zIndexCounter++;
-                    // Center the window
                     const workspaceRect = workspace.getBoundingClientRect();
                     const winRect = win.getBoundingClientRect();
                     win.style.top = `${(workspaceRect.height - winRect.height) / 2}px`;
@@ -84,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         newWindow.id = `window-${tableName}`;
         
-        // FIX: Restore position or set initial position
         if (position) {
             newWindow.style.left = position.left;
             newWindow.style.top = position.top;
@@ -107,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const headerRow = document.createElement('tr');
         schema.columns.forEach((col, colIndex) => {
-            headerRow.innerHTML += `<th data-col="${colIndex}" class="p-3 font-semibold tracking-wider text-gray-300">${col}</th>`;
+            headerRow.innerHTML += `<th data-col-name="${col}" data-col-index="${colIndex}" class="p-3 font-semibold tracking-wider text-gray-300">${col}</th>`;
         });
         tableHead.appendChild(headerRow);
 
@@ -140,12 +137,12 @@ document.addEventListener('DOMContentLoaded', () => {
             e.stopPropagation();
             newWindow.remove();
             delete openWindows[tableName];
-            saveWindowsState(); // Save state on close
+            saveWindowsState();
         });
         
         setupWindowInteractions(newWindow);
         lucide.createIcons();
-        saveWindowsState(); // Save state on create
+        saveWindowsState();
     }
 
     async function fetchAndDisplayPage(tableName, isInitial = false) {
@@ -172,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 tr.dataset.row = tableState.loaded_rows + rowIndex;
                 columns.forEach((col, colIndex) => {
                     const cellValue = rowData[col] ?? '--';
-                    tr.innerHTML += `<td data-row="${tableState.loaded_rows + rowIndex}" data-col="${colIndex}" class="p-3 whitespace-nowrap">${cellValue}</td>`;
+                    tr.innerHTML += `<td data-row="${tableState.loaded_rows + rowIndex}" data-col-index="${colIndex}" class="p-3 whitespace-nowrap">${cellValue}</td>`;
                 });
                 tableBody.appendChild(tr);
             });
@@ -207,7 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
         interactionState.activeInsertRow = newRow;
 
         newRow.addEventListener('input', () => insertBtn.classList.remove('hidden'));
-        // FIX: Allow insert with Enter key
         newRow.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 handleInsert();
@@ -245,16 +241,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             alert('Row inserted successfully!');
             
-            // FIX: Update UI without refresh
             const tableState = openWindows[tableName];
             const tableBody = tableState.element.querySelector('.table-body');
             const newTr = document.createElement('tr');
-            newTr.dataset.row = tableState.total_rows; // Assign a new row index
+            newTr.dataset.row = tableState.total_rows;
             tableState.columns.forEach((col, colIndex) => {
                 const cellValue = newRowData[col] ?? '--';
-                newTr.innerHTML += `<td data-row="${tableState.total_rows}" data-col="${colIndex}" class="p-3 whitespace-nowrap">${cellValue}</td>`;
+                newTr.innerHTML += `<td data-row="${tableState.total_rows}" data-col-index="${colIndex}" class="p-3 whitespace-nowrap">${cellValue}</td>`;
             });
-            tableBody.prepend(newTr); // Add new row to the top of the table
+            tableBody.prepend(newTr);
 
             tableState.total_rows++;
             tableState.loaded_rows++;
@@ -294,6 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Global Listeners ---
     document.addEventListener('mousedown', (e) => {
+        if (interactionState.isEditingCell) return;
         if (e.target.tagName === 'TD' && !e.target.closest('.insert-row')) {
             e.preventDefault();
             clearSelection();
@@ -322,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('mouseup', () => {
         if (interactionState.isDraggingWindow || interactionState.isResizingWindow) {
-            saveWindowsState(); // Save state after move/resize
+            saveWindowsState();
         }
         interactionState.isDraggingWindow = false;
         interactionState.isResizingWindow = false;
@@ -337,9 +333,120 @@ document.addEventListener('DOMContentLoaded', () => {
             handleDelete();
         }
     });
+    
+    // --- Edit Logic ---
+    workspace.addEventListener('dblclick', (e) => {
+        const cell = e.target;
+        if (cell.tagName === 'TD' && !cell.querySelector('input')) {
+            makeCellEditable(cell);
+        }
+    });
+
+    function makeCellEditable(cell) {
+        if (interactionState.isEditingCell) return;
+        interactionState.isEditingCell = true;
+        
+        const originalValue = cell.textContent;
+        cell.textContent = '';
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'cell-editor';
+        input.value = originalValue;
+        
+        cell.appendChild(input);
+        input.focus();
+
+        // FIX: New robust cleanup function to prevent race conditions
+        const finishEditing = (save) => {
+            // Remove listeners immediately to prevent double execution
+            input.removeEventListener('blur', handleBlur);
+            input.removeEventListener('keydown', handleKeyDown);
+
+            const newValue = input.value;
+            // Check if input is still in the DOM before removing
+            if (cell.contains(input)) {
+                cell.removeChild(input);
+            }
+            
+            cell.textContent = save ? newValue : originalValue;
+            interactionState.isEditingCell = false;
+
+            if (save && newValue !== originalValue) {
+                handleCellUpdate(cell, newValue, originalValue);
+            }
+        };
+
+        const handleBlur = () => {
+            finishEditing(false); // Per user request, blur cancels
+        };
+
+        const handleKeyDown = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                finishEditing(true); // Enter saves
+            } else if (e.key === 'Escape') {
+                finishEditing(false); // Escape cancels
+            }
+        };
+
+        input.addEventListener('blur', handleBlur);
+        input.addEventListener('keydown', handleKeyDown);
+    }
+
+    async function handleCellUpdate(cell, newValue, originalValue) {
+        const tableName = cell.closest('tbody').dataset.tableName;
+        const tableSchema = tableSchemas[tableName];
+        const colIndex = cell.dataset.colIndex;
+        const colToUpdate = tableSchema.columns[colIndex];
+        
+        const primaryKeyColName = tableSchema.columns[0];
+        const primaryKeyColIndex = 0;
+        const rowElement = cell.parentElement;
+        const primaryKeyValue = rowElement.cells[primaryKeyColIndex].textContent;
+
+        const username = sessionStorage.getItem('db_user');
+        const password = sessionStorage.getItem('db_pass');
+        const selectedDb = sessionStorage.getItem('selected_db');
+
+        console.log("Sending update to backend:", {
+            db_name: selectedDb,
+            tb_name: tableName,
+            pk_col: primaryKeyColName,
+            pk_val: primaryKeyValue,
+            col_to_update: colToUpdate,
+            new_value: newValue
+        });
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/edit/update`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username, password,
+                    db_name: selectedDb,
+                    tb_name: tableName,
+                    pk_col: primaryKeyColName,
+                    pk_val: primaryKeyValue,
+                    col_to_update: colToUpdate,
+                    new_value: newValue
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.detail || 'Failed to update cell.');
+            }
+            console.log("Update successful!");
+        } catch (error) {
+            console.error('Update error:', error);
+            alert(`Error: ${error.message}`);
+            cell.textContent = originalValue; // Revert on failure
+        }
+    }
+
 
     deleteBtn.addEventListener('click', handleDelete);
-    // FIX: Add event listener for the back button
     backBtn.addEventListener('click', () => {
         window.location.href = 'databases.html';
     });
@@ -370,7 +477,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(error.detail || 'Failed to delete rows.');
             }
             
-            // FIX: Update UI without refresh
             rowsToDelete.forEach(row => row.remove());
             const tableState = openWindows[tableName];
             tableState.total_rows -= rowsToDelete.size;
@@ -418,8 +524,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-
-    // --- NEW: Helper functions for state and UI ---
+    
+    // --- Helper functions for state and UI ---
     function updateRowCount(tableName) {
         const tableState = openWindows[tableName];
         if (tableState) {
@@ -431,7 +537,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveWindowsState() {
         const selectedDb = sessionStorage.getItem('selected_db');
         if (!selectedDb) return;
-        // FIX: Use a dynamic key for sessionStorage
         const stateKey = `open_windows_state_${selectedDb}`;
         const stateToSave = {};
         for (const tableName in openWindows) {
@@ -450,7 +555,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadWindowsState() {
         const selectedDb = sessionStorage.getItem('selected_db');
         if (!selectedDb) return;
-        // FIX: Use a dynamic key for sessionStorage
         const stateKey = `open_windows_state_${selectedDb}`;
         const savedState = JSON.parse(sessionStorage.getItem(stateKey));
         if (savedState) {

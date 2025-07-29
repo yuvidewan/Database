@@ -12,24 +12,29 @@
 <body class="antialiased flex flex-col h-screen">
 
     <!-- Main workspace where table windows will be added -->
-    <main id="workspace" class="flex-grow relative"></main>
+    <main id="workspace" class="flex-grow relative">
+        <!-- NEW: Container for top-right action buttons -->
+        <div id="top-right-actions">
+            <a href="create_table.html" id="new-table-btn" class="px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition-colors flex items-center gap-2 shadow-lg">
+                <i data-lucide="plus" class="w-4 h-4"></i> New Table
+            </a>
+        </div>
+    </main>
 
     <!-- Bottom bar for table selection and actions -->
     <footer id="bottom-bar" class="flex-shrink-0 bg-gray-900/80 backdrop-blur-sm border-t border-gray-700/50 p-2 flex items-center justify-between gap-4">
-        <div class="flex items-center gap-4 flex-shrink-0">
+        <div class="flex items-center gap-2 flex-shrink-0">
             <button id="back-btn" class="px-3 py-2 rounded-md bg-gray-700/60 text-white font-medium hover:bg-gray-600 transition-colors flex items-center gap-2">
                 <i data-lucide="arrow-left" class="w-4 h-4"></i>
             </button>
         </div>
         
-        <!-- FIX: Wrapper to handle scrolling for the table list -->
         <div id="table-list-wrapper" class="flex-grow overflow-x-auto no-scrollbar">
             <div id="table-list" class="flex items-center space-x-2">
                 <!-- Table buttons will be inserted here by JavaScript -->
             </div>
         </div>
         
-        <!-- Action buttons, hidden by default -->
         <div id="actions-container" class="flex items-center gap-2 flex-shrink-0">
             <button id="insert-btn" class="hidden px-4 py-2 rounded-md bg-green-600/80 text-white font-semibold hover:bg-green-500 transition-colors flex items-center gap-2">
                 <i data-lucide="save" class="w-4 h-4"></i>

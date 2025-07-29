@@ -84,3 +84,36 @@ def insert_rows(item: InsertData):
             )
     return {"message": "Deletion successful"}
     
+class UpdateData(BaseModel):
+    username: str
+    password: str
+    db_name: str
+    tb_name: str
+    pk_col: str
+    pk_val: Any
+    col_to_update: str
+    new_value: Any
+
+@router.post("/update")
+def update_col(item: UpdateData):
+    obj = None
+    obj = create_connection(item.username,item.password)
+    if obj is None:
+        return {"message": "issue with database connection"}
+    try:
+        cur = obj.cursor()
+        cur.execute(f"use {item.db_name}")
+        sql = f"""
+            UPDATE `{item.tb_name}` 
+            SET `{item.col_to_update}` = %s 
+            WHERE `{item.pk_col}` = %s
+        """
+        cur.execute(sql, (item.new_value, item.pk_val))
+        obj.commit()
+    except Exception as e:
+        obj.rollback()
+        return HTTPException(
+                status_code= 304,
+                detail="data not updated"
+            )
+    return {"message": "Update successful"}

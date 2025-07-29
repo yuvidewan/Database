@@ -2,7 +2,7 @@
 body {
     font-family: 'Inter', sans-serif;
     background-color: #111827; /* bg-gray-900 */
-    overflow: hidden; /* Prevent scrollbars from appearing on the body */
+    overflow: hidden;
 }
 
 /* Styles for the main draggable and resizable window */
@@ -35,7 +35,7 @@ body {
 
 /* Container for the scrollable table area */
 .table-container {
-    height: calc(100% - 48px); /* Full height minus header */
+    height: calc(100% - 48px);
 }
 
 /* Bottom bar styles */
@@ -43,13 +43,21 @@ body {
     white-space: nowrap;
 }
 
-/* FIX: New style to allow the table list to shrink and scroll */
 #table-list-wrapper {
     min-width: 0;
 }
 
+/* --- NEW: Styles for Top-Right Action Button --- */
+#top-right-actions {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 50; /* Ensure it's above table windows */
+}
+
+
 /* Close button on table windows */
-.close-btn, .add-row-btn {
+.close-btn, .add-row-btn, .remove-column-btn {
     font-size: 1.5rem;
     line-height: 1;
     font-weight: bold;
@@ -65,11 +73,17 @@ body {
 .table-body td {
     user-select: none;
     border: 1px solid transparent;
+    position: relative;
 }
 
 .table-body td.selected {
     background-color: rgba(59, 130, 246, 0.3);
     border: 1px solid #3B82F6;
+}
+
+.table-body td[data-col-index="0"] {
+    cursor: not-allowed;
+    color: #6B7280;
 }
 
 /* INSERT STYLES */
@@ -87,7 +101,41 @@ body {
     border-color: #4F46E5;
 }
 
-/* Utility class to hide scrollbars on elements */
+/* EDIT STYLES */
+.cell-editor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem;
+    background-color: #1F2937;
+    border: 2px solid #4F46E5;
+    color: #F3F4F6;
+    outline: none;
+    box-sizing: border-box;
+}
+
+/* Create Table Page Styles */
+.column-row input[type="text"], .column-row select {
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #4B5563;
+    background-color: #374151;
+    color: #F3F4F6;
+    outline: none;
+}
+.column-row input[type="text"]:focus, .column-row select:focus {
+    border-color: #4F46E5;
+}
+.column-row input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    background-color: #4B5563;
+    border-radius: 2px;
+}
+
+/* Utility class to hide scrollbars */
 .no-scrollbar::-webkit-scrollbar {
     display: none;
 }

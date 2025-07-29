@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DB-Ease | Create Table</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="antialiased flex items-center justify-center h-screen">
+
+    <div class="w-full max-w-4xl p-8 bg-gray-800/80 backdrop-blur-sm border border-gray-700/50 rounded-lg shadow-2xl flex flex-col" style="max-height: 90vh;">
+        <div class="flex-shrink-0 mb-6">
+            <a href="databases.html" class="text-gray-400 hover:text-white mb-4 inline-block">&larr; Back to Databases</a>
+            <h1 class="text-3xl font-bold text-white">Create New Table</h1>
+            <div class="mt-4">
+                <label for="table-name" class="text-sm font-medium text-gray-300">Table Name</label>
+                <input id="table-name" type="text" required class="mt-1 block w-full md:w-1/2 px-3 py-2 bg-gray-900/50 border border-gray-600 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., users, products">
+            </div>
+        </div>
+        
+        <div class="flex-grow overflow-y-auto no-scrollbar -mx-4 px-4">
+            <div id="columns-container" class="space-y-3">
+                <!-- Column definition rows will be inserted here -->
+            </div>
+        </div>
+
+        <div class="flex-shrink-0 mt-6 flex justify-between items-center">
+            <button id="add-column-btn" class="px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600 text-white font-semibold transition-colors flex items-center gap-2">
+                <i data-lucide="plus" class="w-4 h-4"></i> Add Column
+            </button>
+            <button id="create-table-btn" class="px-6 py-2 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition-colors flex items-center gap-2">
+                <i data-lucide="check-circle" class="w-5 h-5"></i> Create Table
+            </button>
+        </div>
+    </div>
+
+    <!-- Template for a single column row -->
+    <template id="column-row-template">
+        <div class="column-row flex items-center gap-3 p-3 bg-gray-900/50 rounded-md">
+            <input type="text" class="column-name bg-gray-700/80" placeholder="Column Name">
+            <select class="data-type bg-gray-700/80">
+                <option>INT</option>
+                <option>VARCHAR</option>
+                <option>TEXT</option>
+                <option>DATE</option>
+                <option>TIMESTAMP</option>
+                <option>BOOLEAN</option>
+                <option>DECIMAL</option>
+            </select>
+            <input type="text" class="length-value bg-gray-700/80" placeholder="Length/Values">
+            <div class="flex items-center gap-4 text-xs text-gray-400">
+                <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" class="allow-null"> NULL</label>
+                <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" class="primary-key"> PK</label>
+                <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" class="auto-increment"> A_I</label>
+            </div>
+            <button class="remove-column-btn text-gray-500 hover:text-red-400">&times;</button>
+        </div>
+    </template>
+
+    <script src="create_table.js"></script>
+</body>
+</html>
