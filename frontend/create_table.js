@@ -30,13 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = ''; // Clear previous inputs
         switch (dataType) {
             case 'VARCHAR':
-                container.innerHTML = `<input type="text" class="length-value bg-gray-700/80" placeholder="e.g., 255">`;
+                container.innerHTML = `<input type="text" class="length-value bg-gray-700/80" placeholder="">`;
                 break;
             case 'DECIMAL':
                 container.innerHTML = `
-                    <input type="text" class="length-value-1 bg-gray-700/80" placeholder="Total">
+                    <input type="text" class="length-value-1 bg-gray-700/80" placeholder="T">
                     <span class="text-gray-400">,</span>
-                    <input type="text" class="length-value-2 bg-gray-700/80" placeholder="Decimal">
+                    <input type="text" class="length-value-2 bg-gray-700/80" placeholder="D">
                 `;
                 break;
             // For INT, TEXT, DATE, etc., the container remains empty

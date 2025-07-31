@@ -37,7 +37,7 @@ def create_table(item: CreateTableRequest):
         cur.execute(f"use {item.db_name}")
         sql = f"create table {item.table_name} ("
         l = len(item.columns)
-        for c,i in enumerate(item.columns):
+        for c,i in enumerate(item.columns):# auto incremement needs to be tested
             # print(i)
             sql += i.name + f" {i.data_type}"
             if i.length is not None:
@@ -46,6 +46,8 @@ def create_table(item: CreateTableRequest):
                 sql += f" primary key"
             if i.not_nullable == True and i.is_primary_key == False:
                 sql += f" not null"
+            # if i.auto_increment == True:
+            #     sql += f" auto increment"
             if c < l-1:
                 sql += " ,"
         sql += ")"
