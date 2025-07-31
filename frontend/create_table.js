@@ -10,13 +10,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const createColumnRow = () => {
         const rowFragment = columnRowTemplate.content.cloneNode(true);
         const newRow = rowFragment.querySelector('.column-row');
+        const dataTypeSelect = newRow.querySelector('.data-type');
+        const lengthContainer = newRow.querySelector('.length-container');
+
+        // Event listener to update inputs when data type changes
+        dataTypeSelect.addEventListener('change', () => {
+            updateLengthInputs(dataTypeSelect.value, lengthContainer);
+        });
         
-        // Add event listener to the remove button
         newRow.querySelector('.remove-column-btn').addEventListener('click', () => {
             newRow.remove();
         });
         
         columnsContainer.appendChild(newRow);
+        updateLengthInputs(dataTypeSelect.value, lengthContainer); // Set initial state
+    };
+
+    const updateLengthInputs = (dataType, container) => {
+        container.innerHTML = ''; // Clear previous inputs
+        switch (dataType) {
+            case 'VARCHAR':
+                container.innerHTML = `<input type="text" class="length-value bg-gray-700/80" placeholder="e.g., 255">`;
+                break;
+            case 'DECIMAL':
+                container.innerHTML = `
+                    <input type="text" class="length-value-1 bg-gray-700/80" placeholder="Total">
+                    <span class="text-gray-400">,</span>
+                    <input type="text" class="length-value-2 bg-gray-700/80" placeholder="Decimal">
+                `;
+                break;
+            // For INT, TEXT, DATE, etc., the container remains empty
+            default:
+                break;
+        }
     };
 
     addColumnBtn.addEventListener('click', createColumnRow);
@@ -47,11 +73,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const isPrimaryKey = row.querySelector('.primary-key').checked;
             if (isPrimaryKey) hasPrimaryKey = true;
 
+            const dataType = row.querySelector('.data-type').value;
+            let length = null;
+
+            // Gather length/precision based on data type
+            if (dataType === 'VARCHAR') {
+                const lengthInput = row.querySelector('.length-value');
+                if (lengthInput) length = lengthInput.value.trim();
+            } else if (dataType === 'DECIMAL') {
+                const totalInput = row.querySelector('.length-value-1');
+                const decimalInput = row.querySelector('.length-value-2');
+                if (totalInput && decimalInput && totalInput.value && decimalInput.value) {
+                    length = `${totalInput.value.trim()},${decimalInput.value.trim()}`;
+                }
+            }
+
             columns.push({
                 name: name,
-                data_type: row.querySelector('.data-type').value,
-                length: row.querySelector('.length-value').value.trim() || null,
-                allow_null: row.querySelector('.allow-null').checked,
+                data_type: dataType,
+                length: length,
+                not_nullable: row.querySelector('.allow-null').checked,
                 is_primary_key: isPrimaryKey,
                 auto_increment: row.querySelector('.auto-increment').checked,
             });
@@ -76,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            // The URL now correctly points to /create/table
             const response = await fetch(`${API_BASE_URL}/create/table`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -89,8 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             alert(`Table '${tableName}' created successfully!`);
-            // FIX: Redirect back to the main workspace for the current database
-            window.location.href = 'index.html'; 
+            window.location.href = 'index.html';
 
         } catch (error) {
             console.error('Create table error:', error);
@@ -98,7 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Add one column row by default
     createColumnRow();
     lucide.createIcons();
 });

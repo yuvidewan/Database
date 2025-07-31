@@ -1,7 +1,7 @@
 /* General body styles */
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #111827; /* bg-gray-900 */
+    background-color: #111827;
     overflow: hidden;
 }
 
@@ -29,8 +29,6 @@ body {
     height: 16px;
     cursor: nwse-resize;
     background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M16 0V16L0 16' stroke='%239CA3AF' stroke-width='2'/%3E%3C/svg%3E%0A");
-    background-repeat: no-repeat;
-    background-position: bottom right;
 }
 
 /* Container for the scrollable table area */
@@ -47,14 +45,12 @@ body {
     min-width: 0;
 }
 
-/* --- NEW: Styles for Top-Right Action Button --- */
 #top-right-actions {
     position: absolute;
     top: 1rem;
     right: 1rem;
-    z-index: 50; /* Ensure it's above table windows */
+    z-index: 50;
 }
-
 
 /* Close button on table windows */
 .close-btn, .add-row-btn, .remove-column-btn {
@@ -116,7 +112,11 @@ body {
     box-sizing: border-box;
 }
 
-/* Create Table Page Styles */
+/* --- NEW: Create Table Page Styles --- */
+.column-row {
+    grid-template-columns: 2fr 1.5fr 1.5fr 3fr auto;
+}
+
 .column-row input[type="text"], .column-row select {
     padding: 0.5rem;
     border-radius: 4px;
@@ -133,6 +133,11 @@ body {
     height: 1rem;
     background-color: #4B5563;
     border-radius: 2px;
+}
+
+.length-container input {
+    width: 50px;
+    text-align: center;
 }
 
 /* Utility class to hide scrollbars */
