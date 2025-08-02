@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const tbParams = new URLSearchParams({ username, password, db_name: selectedDb });
-            const response = await fetch(`${API_BASE_URL}/connection/showtb?${tbParams.toString()}`);
+            const response = await fetch(`/connection/showtb?${tbParams.toString()}`);
             if (!response.ok) throw new Error('Could not fetch table structures.');
             
             tableSchemas = await response.json();
@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedDb = sessionStorage.getItem('selected_db');
         
         const pageParams = new URLSearchParams({ username, password, db_name: selectedDb, table_name: tableName, page: current_page });
-        const response = await fetch(`${API_BASE_URL}/connection/get-page?${pageParams.toString()}`);
+        const response = await fetch(`/connection/get-page?${pageParams.toString()}`);
         
         if (response.ok) {
             const data = await response.json();
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedDb = sessionStorage.getItem('selected_db');
 
         try {
-            const response = await fetch(`${API_BASE_URL}/edit/insert`, {
+            const response = await fetch(`/edit/insert`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password, db_name: selectedDb, tb_name: tableName, data: newRowData })
@@ -419,7 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         try {
-            const response = await fetch(`${API_BASE_URL}/edit/update`, {
+            const response = await fetch(`/edit/update`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -471,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const deleteParams = new URLSearchParams({ username, password, db_name: selectedDb, tb_name: tableName, pk_col: primaryKeyColName, ids: idsToDelete.join(',') });
 
         try {
-            const response = await fetch(`${API_BASE_URL}/edit/delete?${deleteParams.toString()}`);
+            const response = await fetch(`/edit/delete?${deleteParams.toString()}`);
             if (!response.ok) {
                 const error = await response.json();
                 throw new Error(error.detail || 'Failed to delete rows.');

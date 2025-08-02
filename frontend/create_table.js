@@ -5,15 +5,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const tableNameInput = document.getElementById('table-name');
     const columnRowTemplate = document.getElementById('column-row-template');
     
-    const API_BASE_URL = 'http://localhost:8000';
-
+    // FIX: API_BASE_URL is no longer needed
     const createColumnRow = () => {
         const rowFragment = columnRowTemplate.content.cloneNode(true);
         const newRow = rowFragment.querySelector('.column-row');
         const dataTypeSelect = newRow.querySelector('.data-type');
         const lengthContainer = newRow.querySelector('.length-container');
 
-        // Event listener to update inputs when data type changes
         dataTypeSelect.addEventListener('change', () => {
             updateLengthInputs(dataTypeSelect.value, lengthContainer);
         });
@@ -23,11 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         columnsContainer.appendChild(newRow);
-        updateLengthInputs(dataTypeSelect.value, lengthContainer); // Set initial state
+        updateLengthInputs(dataTypeSelect.value, lengthContainer);
     };
 
     const updateLengthInputs = (dataType, container) => {
-        container.innerHTML = ''; // Clear previous inputs
+        container.innerHTML = '';
         switch (dataType) {
             case 'VARCHAR':
                 container.innerHTML = `<input type="text" class="length-value bg-gray-700/80" placeholder="">`;
@@ -39,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     <input type="text" class="length-value-2 bg-gray-700/80" placeholder="D">
                 `;
                 break;
-            // For INT, TEXT, DATE, etc., the container remains empty
             default:
                 break;
         }
@@ -76,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const dataType = row.querySelector('.data-type').value;
             let length = null;
 
-            // Gather length/precision based on data type
             if (dataType === 'VARCHAR') {
                 const lengthInput = row.querySelector('.length-value');
                 if (lengthInput) length = lengthInput.value.trim();
@@ -117,7 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            const response = await fetch(`${API_BASE_URL}/create/table`, {
+            // FIX: Use relative path
+            const response = await fetch(`/create/table`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -129,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             alert(`Table '${tableName}' created successfully!`);
-            window.location.href = 'index.html';
+            window.location.href = '/index.html';
 
         } catch (error) {
             console.error('Create table error:', error);
