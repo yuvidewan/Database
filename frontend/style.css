@@ -112,7 +112,7 @@ body {
     box-sizing: border-box;
 }
 
-/* --- NEW: Create Table Page Styles --- */
+/* Create Table Page Styles */
 .column-row {
     grid-template-columns: 2fr 1.5fr 1.5fr 3fr auto;
 }

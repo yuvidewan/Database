@@ -11,9 +11,7 @@
 </head>
 <body class="antialiased flex flex-col h-screen">
 
-    <!-- Main workspace where table windows will be added -->
     <main id="workspace" class="flex-grow relative">
-        <!-- NEW: Container for top-right action buttons -->
         <div id="top-right-actions">
             <a href="create_table.html" id="new-table-btn" class="px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition-colors flex items-center gap-2 shadow-lg">
                 <i data-lucide="plus" class="w-4 h-4"></i> New Table
@@ -21,7 +19,6 @@
         </div>
     </main>
 
-    <!-- Bottom bar for table selection and actions -->
     <footer id="bottom-bar" class="flex-shrink-0 bg-gray-900/80 backdrop-blur-sm border-t border-gray-700/50 p-2 flex items-center justify-between gap-4">
         <div class="flex items-center gap-2 flex-shrink-0">
             <button id="back-btn" class="px-3 py-2 rounded-md bg-gray-700/60 text-white font-medium hover:bg-gray-600 transition-colors flex items-center gap-2">
@@ -31,7 +28,7 @@
         
         <div id="table-list-wrapper" class="flex-grow overflow-x-auto no-scrollbar">
             <div id="table-list" class="flex items-center space-x-2">
-                <!-- Table buttons will be inserted here by JavaScript -->
+                <!-- Table buttons will be inserted here -->
             </div>
         </div>
         
@@ -46,6 +43,16 @@
             </button>
         </div>
     </footer>
+
+    <!-- UPDATED: Custom Context Menu -->
+    <div id="context-menu" class="hidden absolute p-1 bg-gray-900/50 border border-gray-700 rounded-lg shadow-lg z-50 flex items-center gap-1">
+        <button id="context-empty-btn" class="px-3 py-1.5 rounded-md bg-blue-600/80 text-white font-semibold hover:bg-blue-500 transition-colors flex items-center gap-2">
+            <i data-lucide="archive-restore" class="w-4 h-4"></i> Empty
+        </button>
+        <button id="context-drop-btn" class="px-3 py-1.5 rounded-md bg-red-600/80 text-white font-semibold hover:bg-red-500 transition-colors flex items-center gap-2">
+            <i data-lucide="trash" class="w-4 h-4"></i> Drop
+        </button>
+    </div>
 
     <!-- Template for a single draggable table window -->
     <template id="table-window-template">
@@ -78,7 +85,6 @@
         </div>
     </template>
 
-    <!-- Main application script -->
     <script src="script.js"></script>
 </body>
 </html>

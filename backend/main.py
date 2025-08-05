@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.router import connection,edit,create
+from backend.router import connection,edit,create,empty
 
 app = FastAPI(
     title="Database Management Tool", 
@@ -24,6 +24,7 @@ app.add_middleware(
 app.include_router(connection.router)
 app.include_router(edit.router)
 app.include_router(create.router)
+app.include_router(empty.router)
 
 @app.get("/")
 async def root():
